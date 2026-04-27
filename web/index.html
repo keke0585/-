@@ -1,0 +1,324 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>视频研判系统 2.0 - Sentinel AI</title>
+    <title>视频研判系统 2.0 - Sentinel AI</title>
+    <!-- 全离线本地化样式，兼容 Win7 旧版浏览器 -->
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body class="p-4 md:p-8 font-sans antialiased overflow-hidden flex flex-col h-screen">
+
+    <!-- SVG 图标库 (Symbol Library) -->
+    <svg xmlns="http://www.w3.org/2000/svg" style="display: none;">
+        <!-- 品牌徽标: 极简眼球 -->
+        <symbol id="icon-eye" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                fill="none" stroke="currentColor" />
+            <circle cx="12" cy="12" r="3" stroke-width="1.5" stroke="currentColor" fill="none" />
+        </symbol>
+        <!-- 导入: 极简上浮 -->
+        <symbol id="icon-import" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" fill="none" stroke="currentColor" />
+        </symbol>
+        <!-- 播放: 几何三角 -->
+        <symbol id="icon-play" viewBox="0 0 24 24">
+            <path d="M8 5.5v13L19 12 8 5.5z" stroke-width="1.5" stroke-linejoin="round" fill="currentColor"
+                stroke="currentColor" />
+        </symbol>
+        <!-- 暂停: 双平行柱 -->
+        <symbol id="icon-pause" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M8.5 5v14M15.5 5v14" fill="none"
+                stroke="currentColor" />
+        </symbol>
+        <!-- 下一个: 双箭头 -->
+        <symbol id="icon-next" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 5l7 7-7 7M5 5l7 7-7 7"
+                fill="none" stroke="currentColor" />
+        </symbol>
+        <!-- 停止: 几何方块 -->
+        <symbol id="icon-stop" viewBox="0 0 24 24">
+            <rect x="6" y="6" width="12" height="12" rx="2" stroke-width="1.5" fill="none" stroke="currentColor" />
+        </symbol>
+        <!-- 性能配置: 仪表 -->
+        <symbol id="icon-speed" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M13 10V3L4 14h7v7l9-11h-7z"
+                fill="none" stroke="currentColor" />
+        </symbol>
+        <!-- 核心芯片: GPU -->
+        <symbol id="icon-chip" viewBox="0 0 24 24">
+            <rect x="5" y="5" width="14" height="14" rx="2" stroke-width="1.5" fill="none" stroke="currentColor" />
+            <path stroke-width="1.5" d="M9 5V2M15 5V2M9 22v-3M15 22v-3M2 9h3M2 15h3M22 9h-3M22 15h-3"
+                stroke="currentColor" />
+            <rect x="9" y="9" width="6" height="6" rx="1" fill="currentColor" opacity="0.4" />
+        </symbol>
+        <!-- 策略: 调节 -->
+        <symbol id="icon-strategy" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M4 6h16M4 12h16M4 18h16"
+                fill="none" stroke="currentColor" />
+            <circle cx="9" cy="6" r="2" fill="white" stroke="currentColor" />
+            <circle cx="15" cy="12" r="2" fill="white" stroke="currentColor" />
+            <circle cx="7" cy="18" r="2" fill="white" stroke="currentColor" />
+        </symbol>
+        <!-- 抓拍: 存储 -->
+        <symbol id="icon-camera" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                fill="none" stroke="currentColor" />
+            <circle cx="12" cy="13" r="3" stroke-width="1.5" fill="none" stroke="currentColor" />
+        </symbol>
+        <!-- 渲染框: 框体 -->
+        <symbol id="icon-box" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" stroke-dasharray="2 2"
+                d="M4 4h16v16H4z" fill="none" stroke="currentColor" />
+            <path stroke-width="1.5" d="M4 8V4h4M16 4h4v4M20 16v4h-4M8 20H4v-4" stroke="currentColor" />
+        </symbol>
+        <!-- 智能变频: 动态波 -->
+        <symbol id="icon-smart" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M3 12h3l3-9 6 18 3-9h3"
+                fill="none" stroke="currentColor" />
+        </symbol>
+        <!-- 实时/历史: 时钟 -->
+        <symbol id="icon-clock" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="9" stroke-width="1.5" fill="none" stroke="currentColor" />
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 7v5l3 2" fill="none"
+                stroke="currentColor" />
+        </symbol>
+        <!-- 视频占位: 胶片 -->
+        <symbol id="icon-film" viewBox="0 0 24 24">
+            <rect x="3" y="4" width="18" height="16" rx="2" stroke-width="1.5" fill="none" stroke="currentColor" />
+            <path stroke-width="1.5" d="M7 4v16M17 4v16M3 8h4M17 8h4M3 12h18M3 16h4M17 16h4" stroke="currentColor" />
+        </symbol>
+        <!-- 目标识别: 准星 -->
+        <symbol id="icon-target" viewBox="0 0 24 24">
+            <circle cx="12" cy="12" r="3" stroke-width="1" fill="currentColor" opacity="0.2" />
+            <circle cx="12" cy="12" r="8" stroke-width="1.5" fill="none" stroke="currentColor" />
+            <path stroke-width="1.5" d="M12 2v3M12 19v3M2 12h3M19 12h3" stroke="currentColor" />
+        </symbol>
+        <!-- AI智脑: 核心 -->
+        <symbol id="icon-brain" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 4a8 8 0 100 16 8 8 0 000-16z"
+                fill="none" stroke="currentColor" />
+            <path stroke-width="1.5" d="M12 8l-2 2 2 2 2-2z" fill="currentColor" stroke="currentColor" />
+            <path stroke-width="1" d="M12 4v4M12 16v4M4 12h4M16 12h4" stroke="currentColor" />
+        </symbol>
+    </svg>
+
+    <!-- 顶部状态栏 -->
+    <header class="flex justify-between items-center mb-6 pl-2 pr-2">
+        <div class="flex items-center space-x-3">
+            <div class="w-8 h-8 flex items-center justify-center opacity-80">
+                <svg class="w-6 h-6 text-cyan-400">
+                    <use href="#icon-eye"></use>
+                </svg>
+            </div>
+            <h1 class="text-xl font-semibold tracking-wider">视频智能研判系统<span class="text-cyan-400">.v1</span></h1>
+        </div>
+        <div class="flex items-center space-x-4 text-sm text-slate-400">
+            <div class="flex items-center">
+                <div class="w-2 h-2 rounded-full bg-green-500 mr-2 animate-pulse"></div><span>引擎在线</span>
+            </div>
+            <div id="hardware-status">检测硬件...</div>
+        </div>
+    </header>
+
+    <!-- 主容器 -->
+    <main class="flex-1 flex flex-col md:flex-row gap-6 min-h-0">
+
+        <!-- 左侧：工作区 -->
+        <div class="flex-1 flex flex-col gap-6">
+            <!-- 视频流核心区 -->
+            <div class="glass-panel flex-1 relative flex flex-col overflow-hidden group">
+                <div class="absolute top-4 left-4 z-10 px-3 py-1 text-slate-300 text-xs font-mono font-bold drop-shadow-md"
+                    id="video-info">
+                    等待导入视频...
+                </div>
+                <div class="flex-1 min-h-0 bg-black/40 flex items-center justify-center p-2 relative overflow-hidden">
+                    <img id="video-feed" src="placeholder.jpg" onerror="this.style.display='none'"
+                        onload="this.style.display='block'" alt="视频监控流" />
+                    <div id="no-video-placeholder" class="absolute text-slate-500 text-sm flex flex-col items-center">
+                        <svg class="w-10 h-10 mb-3 opacity-30">
+                            <use href="#icon-film"></use>
+                        </svg>
+                        尚未加载视频
+                    </div>
+                </div>
+
+                <!-- 控制底栏 (悬浮玻璃) -->
+                <div
+                    class="h-16 shrink-0 bg-white/5 border-t border-white/10 flex items-center px-4 justify-between relative z-10">
+                    <div class="flex items-center space-x-3 w-1/2 md:w-1/3">
+                        <button id="btn-import"
+                            class="p-2 hover:bg-white/10 rounded-lg transition text-slate-300 hover:text-white"
+                            title="导入视频">
+                            <svg class="w-5 h-5">
+                                <use href="#icon-import"></use>
+                            </svg>
+                        </button>
+                        <button id="btn-play"
+                            class="w-10 h-10 bg-cyan-500 hover:bg-cyan-400 text-slate-900 rounded-full flex items-center justify-center transition"
+                            title="开始/暂停">
+                            <svg id="icon-play-svg" class="w-4 h-4 ml-0.5 block">
+                                <use href="#icon-play"></use>
+                            </svg>
+                            <svg id="icon-pause-svg" class="w-5 h-5 hidden">
+                                <use href="#icon-pause"></use>
+                            </svg>
+                        </button>
+                        <button id="btn-next"
+                            class="p-2 hover:bg-white/10 rounded-lg transition text-slate-300 hover:text-white"
+                            title="下一个视频">
+                            <svg class="w-5 h-5">
+                                <use href="#icon-next"></use>
+                            </svg>
+                        </button>
+                        <button id="btn-stop"
+                            class="p-2 hover:bg-white/10 rounded-lg transition text-slate-300 hover:text-rose-400"
+                            title="停止">
+                            <svg class="w-5 h-5">
+                                <use href="#icon-stop"></use>
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="flex-1 px-4 flex flex-col justify-center">
+                        <div class="flex justify-between text-xs text-slate-400 mb-1">
+                            <span id="time-current">00:00:00</span>
+                            <span id="time-elapsed" class="text-cyan-400">耗时: 0s</span>
+                        </div>
+                        <div class="flex items-center w-full">
+                            <input type="range" id="progress-bar-input" min="0" max="100" value="0" step="0.1"
+                                class="w-full h-1.5 bg-slate-800 rounded-full outline-none hover:bg-slate-700 transition appearance-none accent-cyan-500 cursor-pointer">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 播放列表展现区 -->
+                <div id="playlist-container"
+                    class="hidden shrink-0 bg-black/40 border-t border-white/10 p-2 overflow-x-auto whitespace-nowrap flex gap-2">
+                </div>
+            </div>
+
+            <!-- 设置面板 -->
+            <div class="glass-panel p-5 grid grid-cols-2 md:grid-cols-5 gap-4 text-sm shrink-0">
+                <div class="flex flex-col space-y-2">
+                    <label class="text-slate-400 text-xs uppercase tracking-widest flex items-center">
+                        <svg class="w-3 h-3 mr-1 opacity-60">
+                            <use href="#icon-target"></use>
+                        </svg>目标类型
+                    </label>
+                    <select id="config-target"
+                        class="bg-black/20 border border-white/10 rounded-lg p-2 text-white outline-none focus:border-cyan-500/50 transition">
+                        <option value="both">识别人和车</option>
+                        <option value="person">只识别人</option>
+                        <option value="vehicle">只识别车</option>
+                    </select>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label class="text-slate-400 text-xs uppercase tracking-widest flex items-center">
+                        <svg class="w-3 h-3 mr-1 opacity-60">
+                            <use href="#icon-brain"></use>
+                        </svg>AI 模型选择
+                    </label>
+                    <select id="config-model"
+                        class="bg-black/20 border border-white/10 rounded-lg p-2 text-white outline-none focus:border-cyan-500/50 transition">
+                        <option value="yolo11n.pt">YOLO 11 Nano (极速)</option>
+                        <option value="yolo11s.pt">YOLO 11 Small (均衡)</option>
+                        <option value="yolo11m.pt">YOLO 11 Medium (高精)</option>
+                        <option value="yolov8n.pt">YOLO v8 Nano (经典极速)</option>
+                        <option value="yolov8s.pt">YOLO v8 Small (经典均衡)</option>
+                    </select>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label class="text-slate-400 text-xs uppercase tracking-widest flex items-center">
+                        <svg class="w-3 h-3 mr-1 opacity-60">
+                            <use href="#icon-strategy"></use>
+                        </svg>检测策略
+                    </label>
+                    <select id="config-strategy"
+                        class="bg-black/20 border border-white/10 rounded-lg p-2 text-white outline-none focus:border-cyan-500/50 transition">
+                        <option value="dual">面部身形双模联动</option>
+                        <option value="single">纯身形极速追踪</option>
+                        <option value="high">高精度区域细扫</option>
+                    </select>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label class="text-slate-400 text-xs uppercase tracking-widest flex items-center">
+                        <svg class="w-3 h-3 mr-1 opacity-60">
+                            <use href="#icon-speed"></use>
+                        </svg>性能配置
+                    </label>
+                    <select id="config-speed"
+                        class="bg-black/20 border border-white/10 rounded-lg p-2 text-white outline-none focus:border-cyan-500/50 transition">
+                        <option value="640">平衡模式 (640px)</option>
+                        <option value="480">快速模式 (480px)</option>
+                        <option value="320">极速响应 (320px)</option>
+                        <option value="0">无损画质 (不缩放)</option>
+                    </select>
+                </div>
+                <div class="flex flex-col space-y-2">
+                    <label class="text-slate-400 text-xs uppercase tracking-widest flex items-center">
+                        <svg class="w-3 h-3 mr-1 opacity-60">
+                            <use href="#icon-chip"></use>
+                        </svg>核心硬件
+                    </label>
+                    <div class="flex flex-wrap gap-x-3 gap-y-2 mt-1">
+                        <label class="flex items-center space-x-1 cursor-pointer group">
+                            <input type="checkbox" id="config-smart" checked
+                                class="w-3.5 h-3.5 rounded border-white/20 bg-black/20 text-cyan-500 focus:ring-cyan-500/50 focus:ring-offset-0">
+                            <span class="text-slate-300 group-hover:text-white transition text-xs">变频</span>
+                        </label>
+                        <label class="flex items-center space-x-1 cursor-pointer group">
+                            <input type="checkbox" id="config-save" checked
+                                class="w-3.5 h-3.5 rounded border-white/20 bg-black/20 text-cyan-500 focus:ring-cyan-500/50 focus:ring-offset-0">
+                            <span class="text-slate-300 group-hover:text-white transition text-xs">抓拍</span>
+                        </label>
+                        <label class="flex items-center space-x-1 cursor-pointer group">
+                            <input type="checkbox" id="config-drawbox" checked
+                                class="w-3.5 h-3.5 rounded border-white/20 bg-black/20 text-cyan-500 focus:ring-cyan-500/50 focus:ring-offset-0">
+                            <span class="text-slate-300 group-hover:text-white transition text-xs">绘框</span>
+                        </label>
+                        <label class="flex items-center space-x-1 cursor-pointer group">
+                            <input type="checkbox" id="config-gpu" checked
+                                class="w-3.5 h-3.5 rounded border-white/20 bg-black/20 text-cyan-500 focus:ring-cyan-500/50 focus:ring-offset-0">
+                            <span id="label-gpu"
+                                class="text-slate-300 group-hover:text-white transition text-xs">GPU</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧：事件抓拍流 -->
+        <div class="w-full md:w-80 glass-panel flex flex-col overflow-hidden shrink-0">
+            <div class="p-4 border-b border-white/5 flex justify-between items-center">
+                <h2 class="text-sm font-semibold tracking-wide flex items-center">
+                    <svg class="w-4 h-4 mr-2 text-cyan-400">
+                        <use href="#icon-clock"></use>
+                    </svg>
+                    实时抓拍 (EVENTS)
+                </h2>
+                <span class="px-2 py-0.5 bg-cyan-500/10 text-cyan-400 text-xs rounded-full border border-cyan-400/20"
+                    id="event-count">0</span>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-4 space-y-3" id="events-container">
+                <!-- 预占位态 -->
+                <div class="text-center text-slate-500 text-xs py-10" id="events-empty">
+                    任务未开始或暂无发现...
+                </div>
+                <!-- 动态抓拍卡片将插入此处 (JS) -->
+            </div>
+        </div>
+
+    </main>
+
+    <script src="app.js"></script>
+</body>
+
+</html>

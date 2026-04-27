@@ -1,0 +1,21 @@
+# 核心依赖 (AI 引擎与图像处理)
+# 交付包必须锁定以下 PyTorch 基线版本，避免打到过高版本导致 WinError 127 / asmjit.dll 依赖异常。
+ultralytics>=8.3.0
+torch==2.0.1
+torchvision==0.15.2
+torchaudio==2.0.2
+opencv-python
+numpy
+
+# 追踪器依赖项
+lapx
+
+# 可选推荐: MediaPipe 在兼容系统上可提供更高精度的人脸检测；
+# 如果目标系统不兼容或未安装，环境检测将默认无缝回退至 OpenCV Haar 级联作为兜底方案。
+mediapipe
+
+# UI 与资源转换
+Pillow
+
+# 打包工具
+pyinstaller
